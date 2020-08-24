@@ -3,19 +3,29 @@
 namespace App\ViewModels;
 
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Spatie\ViewModels\ViewModel;
 
 class MovieViewModel extends ViewModel
 {
-
     public $movie;
 
+    /**
+     * MovieViewModel constructor.
+     *
+     * @param $movie
+     */
     public function __construct($movie)
     {
         $this->movie = $movie;
     }
 
-    public function movie()
+    /**
+     * Return movie data.
+     *
+     * @return Collection
+     */
+    public function movie(): Collection
     {
         return collect($this->movie)->merge([
             'poster_path' => $this->returnImageUrl() . $this->movie['poster_path'],

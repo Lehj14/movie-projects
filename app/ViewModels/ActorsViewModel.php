@@ -3,18 +3,29 @@
 namespace App\ViewModels;
 
 use Carbon\Carbon;
+use Illuminate\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Collection;
 use Spatie\ViewModels\ViewModel;
 
 class ActorsViewModel extends ViewModel
 {
     private $actors;
 
+    /**
+     * ActorsViewModel constructor.
+     *
+     * @param $actors
+     */
     public function __construct($actors)
     {
         $this->actors = $actors;
     }
 
-    public function actors()
+    /**
+     * @return Collection
+     */
+    public function actors(): Collection
     {
         return collect($this->actors)->map(function($actor) {
             return collect($actor)->merge([
@@ -33,6 +44,12 @@ class ActorsViewModel extends ViewModel
         })->dump();
     }
 
+    /**
+     * TODO:: need to refactor this as its also use on the other view models
+     * Return url from env variables.
+     *
+     * @return Repository|Application|mixed
+     */
     private function returnImageUrl()
     {
         return config('services.tmdb.actorImageUrl');

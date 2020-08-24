@@ -3,6 +3,9 @@
 namespace App\ViewModels;
 
 use Carbon\Carbon;
+use Illuminate\Config\Repository;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Collection;
 use Spatie\ViewModels\ViewModel;
 
 class MoviesViewModel extends ViewModel
@@ -11,6 +14,13 @@ class MoviesViewModel extends ViewModel
     public $nowPlayingMovies;
     public $genres;
 
+    /**
+     * MoviesViewModel constructor.
+     *
+     * @param $popularMovies
+     * @param $nowPlayingMovies
+     * @param $genres
+     */
     public function __construct($popularMovies, $nowPlayingMovies, $genres)
     {
         $this->popularMovies = $popularMovies;
@@ -18,24 +28,46 @@ class MoviesViewModel extends ViewModel
         $this->genres = $genres;
     }
 
-    public function popularMovies()
+    /**
+     * Return popular movies.
+     *
+     * @return Collection
+     */
+    public function popularMovies(): Collection
     {
         return $this->formatMovies($this->popularMovies);
     }
 
-    public function nowPlayingMovies()
+    /**
+     * Return now playing.
+     *
+     * @return Collection
+     */
+    public function nowPlayingMovies(): Collection
     {
         return $this->formatMovies($this->nowPlayingMovies);
     }
 
-    public function genres()
+    /**
+     * Return genres.
+     *
+     * @return Collection
+     */
+    public function genres(): Collection
     {
         return collect($this->genres)->mapWithKeys(function ($genre) {
             return [$genre['id'] => $genre['name']];
         });
     }
 
-    private function formatMovies($movies)
+    /**
+     * Format movies result.
+     *
+     * @param $movies
+     *
+     * @return Collection
+     */
+    private function formatMovies($movies): Collection
     {
         return collect($movies)->map(function($movie) {
             $genresFormatted = collect($movie['genre_ids'])->mapWithKeys(function($value) {
@@ -60,6 +92,12 @@ class MoviesViewModel extends ViewModel
         });
     }
 
+    /**
+     * TODO:: need to refactor this as its also use on the other view models
+     * Return url from env variables.
+     *
+     * @return Repository|Application|mixed
+     */
     private function returnImageUrl()
     {
         return config('services.tmdb.imageUrl');

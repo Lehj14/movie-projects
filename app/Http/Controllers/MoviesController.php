@@ -16,7 +16,7 @@ class MoviesController extends Controller
     private const NOW_PLAYING = '/movie/now_playing';
 
     /**
-     * Display a listing of the resource.
+     * Display movie's index.
      *
      * @return Application|Factory|Response|View
      */
@@ -38,6 +38,11 @@ class MoviesController extends Controller
         return view('movies.index', $viewModel);
     }
 
+    /**
+     * Get all now playing from the endpoint.
+     *
+     * @return mixed
+     */
     public function nowPlaying()
     {
         return Http::withToken(config('services.tmdb.token'))
@@ -53,9 +58,10 @@ class MoviesController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Show movie details.
      *
      * @param int $id
+     *
      * @return Application|Factory|View
      */
     public function show($id)

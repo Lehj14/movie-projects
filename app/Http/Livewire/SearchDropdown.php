@@ -2,13 +2,21 @@
 //NOTE: php artisan make:livewire SearchDropdown
 namespace App\Http\Livewire;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Http;
+use Illuminate\View\View;
 use Livewire\Component;
 
 class SearchDropdown extends Component
 {
     public $search = '';
 
+    /**
+     * Render search dropdown using livewire.
+     *
+     * @return Application|Factory|View
+     */
     public function render()
     {
         $searchResult = [];
