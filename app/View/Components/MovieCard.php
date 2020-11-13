@@ -2,20 +2,23 @@
 
 namespace App\View\Components;
 
+use Illuminate\Support\Collection;
 use Illuminate\View\Component;
 use Illuminate\View\View;
 
 class MovieCard extends Component
 {
-    public $popularMovie;
+    /**
+     * @var Collection
+     */
+    public Collection $popularMovie;
 
     /**
      * Create a new component instance.
      *
      * @param $popularMovie
-     * @param $genres
      */
-    public function __construct($popularMovie)
+    public function __construct(Collection $popularMovie)
     {
         $this->popularMovie = $popularMovie;
     }

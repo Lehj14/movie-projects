@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Helper;
 use App\ViewModels\MoviesViewModel;
 use App\ViewModels\MovieViewModel;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 
@@ -16,14 +14,39 @@ class MoviesController extends Controller
     private const NOW_PLAYING = '/movie/now_playing';
 
     /**
+     * @var string
+     */
+    private string $url;
+
+    /**
+     * @var string
+     */
+    private string $token;
+
+    /**
+     * @var string
+     */
+    private string $genreUrl;
+
+    /**
+     * MoviesController constructor.
+     */
+    public function __construct()
+    {
+        $this->url      = Helper::getUrl();
+        $this->token    = Helper::getToken();
+        $this->genreUrl = Helper::getGenreUrl();
+    }
+
+    /**
      * Display movie's index.
      *
-     * @return Application|Factory|Response|View
+     * @return View
      */
-    public function index()
+    public function index(): View
     {
-        $popularMovies = Http::withToken(config('services.tmdb.token'))
-            ->get(config('services.tmdb.URL') . self::POPULAR_MOVIES)
+        $popularMovies = Http::withToken($this->token)
+            ->get($this->url . self::POPULAR_MOVIES)
             ->json()['results'];
 
         $genres = $this->genreMovieList();
@@ -41,19 +64,22 @@ class MoviesController extends Controller
     /**
      * Get all now playing from the endpoint.
      *
-     * @return mixed
+     * @return array
      */
-    public function nowPlaying()
+    public function nowPlaying(): array
     {
-        return Http::withToken(config('services.tmdb.token'))
-            ->get(config('services.tmdb.URL') . self::NOW_PLAYING)
+        return Http::withToken($this->token)
+            ->get($this->url . self::NOW_PLAYING)
             ->json()['results'];
     }
 
-    public function genreMovieList()
+    /**
+     * @return array
+     */
+    public function genreMovieList(): array
     {
-        return Http::withToken(config('services.tmdb.token'))
-            ->get(config('services.tmdb.genreUrL'))
+        return Http::withToken($this->token)
+            ->get($this->genreUrl)
             ->json()['genres'];
     }
 
@@ -62,12 +88,12 @@ class MoviesController extends Controller
      *
      * @param int $id
      *
-     * @return Application|Factory|View
+     * @return View
      */
-    public function show($id)
+    public function show(int $id): View
     {
-        $movie = Http::withToken(config('services.tmdb.token'))
-            ->get(config('services.tmdb.URL') . '/movie/' . $id . '?append_to_response=credits,videos,images')
+        $movie = Http::withToken($this->token)
+            ->get($this->url . '/movie/' . $id . '?append_to_response=credits,videos,images')
             ->json();
 
         $viewModel = new MovieViewModel(

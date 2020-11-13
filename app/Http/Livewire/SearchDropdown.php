@@ -2,6 +2,7 @@
 //NOTE: php artisan make:livewire SearchDropdown
 namespace App\Http\Livewire;
 
+use App\Helper\Helper;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Http;
@@ -10,7 +11,16 @@ use Livewire\Component;
 
 class SearchDropdown extends Component
 {
-    public $search = '';
+    public string $search = '';
+    private string $url;
+    private string $token;
+
+    public function __construct($id)
+    {
+        parent::__construct($id);
+        $this->url   = Helper::getUrl();
+        $this->token = Helper::getToken();
+    }
 
     /**
      * Render search dropdown using livewire.
@@ -22,8 +32,8 @@ class SearchDropdown extends Component
         $searchResult = [];
 
         if (strlen($this->search) > 2) {
-            $searchResult = Http::withToken(config('services.tmdb.token'))
-                ->get(config('services.tmdb.URL') . '/search/movie?query=' . $this->search)
+            $searchResult = Http::withToken($this->token)
+                ->get($this->url . '/search/movie?query=' . $this->search)
                 ->json()['results'];
         }
 

@@ -2,30 +2,46 @@
 
 namespace App\ViewModels;
 
+use App\Helper\Helper;
 use Carbon\Carbon;
-use Illuminate\Config\Repository;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Collection;
 use Spatie\ViewModels\ViewModel;
 
 class MoviesViewModel extends ViewModel
 {
-    public $popularMovies;
-    public $nowPlayingMovies;
-    public $genres;
+    /**
+     * @var array
+     */
+    public array $popularMovies;
+
+    /**
+     * @var array
+     */
+    public array $nowPlayingMovies;
+
+    /**
+     * @var array
+     */
+    public array $genres;
+
+    /**
+     * @var string
+     */
+    private string $imageUrl;
 
     /**
      * MoviesViewModel constructor.
      *
-     * @param $popularMovies
-     * @param $nowPlayingMovies
-     * @param $genres
+     * @param array $popularMovies
+     * @param array $nowPlayingMovies
+     * @param array $genres
      */
-    public function __construct($popularMovies, $nowPlayingMovies, $genres)
+    public function __construct(array $popularMovies, array $nowPlayingMovies, array $genres)
     {
-        $this->popularMovies = $popularMovies;
+        $this->popularMovies    = $popularMovies;
         $this->nowPlayingMovies = $nowPlayingMovies;
-        $this->genres = $genres;
+        $this->genres           = $genres;
+        $this->imageUrl         = Helper::getImageUrl();
     }
 
     /**
@@ -75,7 +91,7 @@ class MoviesViewModel extends ViewModel
             })->implode(', ');
 
             return collect($movie)->merge([
-                'poster_path' => $this->returnImageUrl() . $movie['poster_path'],
+                'poster_path' => $this->imageUrl . 'w500' . $movie['poster_path'],
                 'vote_average' => $movie['vote_average'] * 10 .'%',
                 'release_date' => Carbon::parse($movie['release_date'])->format('M d, Y'),
                 'genres' => $genresFormatted,
@@ -90,16 +106,5 @@ class MoviesViewModel extends ViewModel
                 'genres',
             ]);
         });
-    }
-
-    /**
-     * TODO:: need to refactor this as its also use on the other view models
-     * Return url from env variables.
-     *
-     * @return Repository|Application|mixed
-     */
-    private function returnImageUrl()
-    {
-        return config('services.tmdb.imageUrl');
     }
 }

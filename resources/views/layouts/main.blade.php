@@ -7,8 +7,11 @@
     <title>Movie app</title>
 
     <link rel="stylesheet" href="/css/main.css">
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
     @livewireStyles
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <!-- ICON NEEDS FONT AWESOME FOR CHEVRON UP ICON -->
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
 <body class="font-mono bg-gray-900 text-white">
     <nav class="border-b border-gra-800 text-white">
@@ -22,7 +25,7 @@
                     <a href="{{ route('movies.index') }}" class="hover:text-gray-300  mt-3 md:mt-0">Movies</a>
                 </li>
                 <li class="md:ml-6">
-                    <a href="#" class="hover:text-gray-300  mt-3 md:mt-0">TV Shows</a>
+                    <a href="{{ route('tv.index') }}" class="hover:text-gray-300  mt-3 md:mt-0">TV Shows</a>
                 </li>
                 <li class="md:ml-6">
                     <a href="{{ route('actors.index') }}" class="hover:text-gray-300  mt-3 md:mt-0">Actors</a>
@@ -40,5 +43,6 @@
     </nav>
     @yield('content')
     @livewireScripts
+    @yield('scripts')
 </body>
 </html>

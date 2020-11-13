@@ -2,22 +2,32 @@
 
 namespace App\ViewModels;
 
+use App\Helper\Helper;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\ViewModels\ViewModel;
 
 class MovieViewModel extends ViewModel
 {
-    public $movie;
+    /**
+     * @var array
+     */
+    public array $movie;
+
+    /**
+     * @var string
+     */
+    private string $imageUrl;
 
     /**
      * MovieViewModel constructor.
      *
      * @param $movie
      */
-    public function __construct($movie)
+    public function __construct(array $movie)
     {
-        $this->movie = $movie;
+        $this->movie    = $movie;
+        $this->imageUrl = Helper::getImageUrl();
     }
 
     /**
@@ -28,14 +38,14 @@ class MovieViewModel extends ViewModel
     public function movie(): Collection
     {
         return collect($this->movie)->merge([
-            'poster_path' => $this->returnImageUrl() . $this->movie['poster_path'],
+            'poster_path' => $this->movie['poster_path'] ? $this->imageUrl . 'w500'. $this->movie['poster_path'] :
+                'https://ui-avatars.com/api/?size=w500&name='. $this->movie['poster_path'],
             'vote_average' => $this->movie['vote_average'] * 10 .'%',
             'release_date' => Carbon::parse($this->movie['release_date'])->format('M d, Y'),
             'genres' => collect($this->movie['genres'])->pluck('name')->flatten()->implode(', '),
             'crew' => collect($this->movie['credits']['crew'])->take(5),
             'cast' => collect($this->movie['credits']['cast'])->take(15),
             'images' => collect($this->movie['images']['backdrops'])->take(9),
-
         ])->only([
             'poster_path',
             'id',
@@ -50,12 +60,5 @@ class MovieViewModel extends ViewModel
             'crew',
             'cast',
         ]);
-    }
-
-    //TODO:need to put this on a helper or another class so the MoviesViewModel can also access it and
-    //avoid duplication
-    private function returnImageUrl()
-    {
-        return config('services.tmdb.imageUrl');
     }
 }

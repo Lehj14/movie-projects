@@ -2,18 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Helper\Helper;
 use App\ViewModels\ActorsViewModel;
-use Illuminate\Http\Request;
+use App\ViewModels\ActorViewModel;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Support\Facades\Http;
+use Illuminate\View\View;
 
 class ActorsController extends Controller
 {
     private const POPULAR_ACTOR = '/person/popular';
+    private const ACTOR = '/person/';
 
-    public function index()
+    /**
+     * @var string
+     */
+    private string $url;
+
+    /**
+     * @var string
+     */
+    private string $token;
+
+    /**
+     * ActorsController constructor.
+     */
+    public function __construct()
     {
-        $actors = Http::withToken(config('services.tmdb.token'))
-            ->get(config('services.tmdb.URL') . self::POPULAR_ACTOR)
+        $this->url   = Helper::getUrl();
+        $this->token = Helper::getToken();
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return Application|Factory|View
+     */
+    public function index(int $page = 1)
+    {
+        $actors = Http::withToken($this->token)
+            ->get($this->url . self::POPULAR_ACTOR . '?page=' . $page)
             ->json()['results'];
 
         $viewModel = new ActorsViewModel($actors);
@@ -22,68 +51,28 @@ class ActorsController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return View
      */
-    public function edit($id)
+    public function show(int $id): View
     {
-        //
-    }
+        $actor = Http::withToken($this->token)
+            ->get($this->url . self::ACTOR . $id)
+            ->json();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
+        $social = Http::withToken($this->token)
+            ->get($this->url . self::ACTOR . $id . '/external_ids')
+            ->json();
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $credits = Http::withToken($this->token)
+            ->get($this->url . self::ACTOR . $id . '/combined_credits')
+            ->json();
+
+        $viewModel = new ActorViewModel($actor, $social, $credits);
+
+        return view('actors.show', $viewModel);
     }
 }

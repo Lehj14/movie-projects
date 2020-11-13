@@ -36,5 +36,6 @@ return [
         'imageUrl' => env('TMDB_IMAGE_URL'),
         'genreUrL' =>  env('TMDB_GENRE_URL'),
         'actorImageUrl' =>  env('TMDB_ACTOR_IMAGE_URL'),
+        'tvgenreUrl' => env('TMDB_GENRE_TV_URL'),
     ],
 ];
